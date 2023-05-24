@@ -5,7 +5,11 @@
 package it.polito.tdp.itunes;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.itunes.model.Album;
+import it.polito.tdp.itunes.model.BilancioAlbum;
 import it.polito.tdp.itunes.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,7 +38,7 @@ public class FXMLController {
     private Button btnPercorso; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA1"
-    private ComboBox<?> cmbA1; // Value injected by FXMLLoader
+    private ComboBox<Album> cmbA1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA2"
     private ComboBox<?> cmbA2; // Value injected by FXMLLoader
@@ -51,6 +55,15 @@ public class FXMLController {
     @FXML
     void doCalcolaAdiacenze(ActionEvent event) {
     	
+    	txtResult.clear();
+    	
+    	Album input = cmbA1.getValue();
+    	
+    	List<BilancioAlbum> listaAdiacenzeOrdinata = this.model.getAdiacenze(input);
+    	
+    	for(BilancioAlbum ba: listaAdiacenzeOrdinata) {
+    		txtResult.appendText(ba.getAlbum().toString()+ " "+ ba.getBilancio()+"\n");
+    	}
     }
 
     @FXML
@@ -60,7 +73,23 @@ public class FXMLController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	txtResult.clear();
+    	String durata = txtN.getText();
+    	int durataNum = 0;
     	
+    	if(durata.equals("")) {
+    		txtResult.appendText("inserisci un numero");
+    	}
+    	else {
+    		durataNum = Integer.parseInt(durata);
+    	}
+    	
+    	model.buildGraph(durataNum);
+    	
+    	txtResult.appendText("# vertici: "+ model.getNumVert()+"\n");
+    	txtResult.appendText("# archi: "+ model.getNumEdge()+"\n");
+    	
+    	cmbA1.getItems().setAll(this.model.getVertici());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
