@@ -41,7 +41,7 @@ public class FXMLController {
     private ComboBox<Album> cmbA1; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbA2"
-    private ComboBox<?> cmbA2; // Value injected by FXMLLoader
+    private ComboBox<Album> cmbA2; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
@@ -69,6 +69,26 @@ public class FXMLController {
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
     	
+    	txtResult.clear();
+    	
+    	Album target = cmbA2.getValue();
+    	Album source = cmbA1.getValue();
+    	
+    	int minimoPeso = 0;
+    	
+    	if(txtX.getText().equals("")) {
+    		txtResult.appendText("inserire un numero valido in X");
+    	}
+    	else {
+    		minimoPeso = Integer.parseInt(txtX.getText());
+    	}
+    	
+    	List<Album> bestPath = this.model.getPath(source, target, minimoPeso);
+    	
+    	for(Album a: bestPath) {
+    		txtResult.appendText(a.toString()+"\n");
+    	}
+    	
     }
 
     @FXML
@@ -90,6 +110,7 @@ public class FXMLController {
     	txtResult.appendText("# archi: "+ model.getNumEdge()+"\n");
     	
     	cmbA1.getItems().setAll(this.model.getVertici());
+    	cmbA2.getItems().setAll(this.model.getVertici());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete

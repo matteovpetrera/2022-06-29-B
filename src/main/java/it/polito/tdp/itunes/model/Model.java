@@ -18,6 +18,9 @@ public class Model {
 	SimpleDirectedWeightedGraph<Album, DefaultWeightedEdge> graph;
 	ItunesDAO dao;
 	
+	int bestScore;
+	List<Album> bestPath;
+	
 	public Model() {
 		bilancio = new ArrayList<>();
 		vertices = new ArrayList<>();
@@ -25,6 +28,75 @@ public class Model {
 		dao = new ItunesDAO();
 	}
 	
+	//ricorsione(cammino) - PUNTO 2
+	
+	public List<Album> getPath(Album source, Album target, int x) {
+		
+		List<Album> parziale = new ArrayList<>();
+		this.bestPath = new ArrayList<>();
+		this.bestScore = 0;
+		parziale.add(source);
+		
+		
+		recursive(parziale, target, x);
+		
+		
+		return this.bestPath;
+			
+	}
+	
+	
+	public void recursive(List<Album> parziale, Album target, int x) {
+		
+		Album current = parziale.get(parziale.size()-1);
+		
+		//condizione di termine
+		if(current.equals(target)) {
+			
+			if(getScore(parziale) > this.bestScore) {
+				
+				this.bestPath = new ArrayList<>(parziale);
+				this.bestScore = getScore(parziale);
+			}
+			
+			return;
+		}
+		
+		
+		//ricorsione
+		
+		List<Album> succ = Graphs.successorListOf(graph, current);
+		
+		for(Album a: succ) {
+			
+			if(graph.getEdgeWeight(graph.getEdge(current, a))>x && !parziale.contains(a)) {
+				
+				parziale.add(a);
+				recursive(parziale, target, x);
+				parziale.remove(a);
+			}
+			
+		}
+		
+	}
+	
+	public int getScore(List<Album> parziale) {
+		
+		int score = 0;
+		
+		for(Album a: parziale) {
+			
+			if(getBilancio(a) > getBilancio(parziale.get(0))){
+				
+				score+=1;
+			}
+		}
+		
+		return score;
+	}
+	
+	
+	//grafo - PUNTO 1
 	public void buildGraph(int durata) {
 		
 		loadNodes(durata);
